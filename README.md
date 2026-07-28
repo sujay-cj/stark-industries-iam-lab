@@ -4,13 +4,7 @@
 
 **Enterprise-grade Identity & Access Management home lab — built from the ground up.**
 
-[![Node.js](https://img.shields.io/badge/Node.js-v22-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org)
-[![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
-[![Keycloak](https://img.shields.io/badge/Keycloak-26.3-4D9BE6?style=for-the-badge&logo=keycloak&logoColor=white)](https://www.keycloak.org)
-[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com)
-[![Splunk](https://img.shields.io/badge/Splunk-SIEM-FF5733?style=for-the-badge&logo=splunk&logoColor=white)](https://splunk.com)
-[![Gemini](https://img.shields.io/badge/Google_Gemini-AI-8E75B2?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
+[![Node.js](https://img.shields.io/badge/Node.js-v22-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org) [![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev) [![Keycloak](https://img.shields.io/badge/Keycloak-26.3-4D9BE6?style=for-the-badge&logo=keycloak&logoColor=white)](https://www.keycloak.org) [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com) [![Splunk](https://img.shields.io/badge/Splunk-SIEM-FF5733?style=for-the-badge&logo=splunk&logoColor=white)](https://splunk.com) [![Gemini](https://img.shields.io/badge/Google_Gemini-AI-8E75B2?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
 *Keycloak OIDC · OpenLDAP Federation · Splunk SIEM · JARVIS AI Security Copilot*
 
