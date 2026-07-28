@@ -1,0 +1,167 @@
+================================================================================
+  STARK INDUSTRIES IAM LAB — SYSTEM STARTUP GUIDE
+================================================================================
+
+This guide explains how to start every component of the Stark Industries IAM Lab
+from scratch. Run these steps in order each time you want to bring the full system up.
+
+Prerequisites:
+  - Docker Desktop is installed and running
+  - Node.js v18+ is installed
+  - You have a Gemini API key from https://aistudio.google.com
+  - Both .env files are configured (see Step 0)
+
+================================================================================
+  STEP 0 — CHECK YOUR .env FILES (one-time setup)
+================================================================================
+
+Make sure BOTH of these files exist and have the correct values:
+
+  File 1: stark-industries-iam-lab\.env  (root)
+  File 2: stark-industries-iam-lab\backend\.env
+
+Both files must contain at minimum:
+
+    GEMINI_API_KEY=your_gemini_api_key_here
+
+    LDAP_ORGANISATION=Stark Industries
+    LDAP_DOMAIN=stark.lab
+    LDAP_ADMIN_PASSWORD=Stark@123
+
+    POSTGRES_DB=keycloak
+    POSTGRES_USER=keycloak
+    POSTGRES_PASSWORD=Stark@123
+
+    KEYCLOAK_ADMIN=admin
+    KEYCLOAK_ADMIN_PASSWORD=Stark@123
+
+    SPLUNK_HOST=https://localhost:8089
+    SPLUNK_PASSWORD=Stark@123
+    KEYCLOAK_REALM=stark-industries
+
+You only need to do this once. Do NOT commit .env files to Git.
+
+================================================================================
+  STEP 1 — START DOCKER SERVICES (OpenLDAP + PostgreSQL + Keycloak)
+================================================================================
+
+Open a terminal and run:
+
+    cd C:\Users\cjsuj\OneDrive\Desktop\stark-industries-iam-lab
+    docker compose up -d
+
+This starts 3 containers in the background:
+  - openldap    → LDAP directory on ports 389 and 636
+  - postgres    → PostgreSQL database (used by Keycloak) on port 5432
+  - keycloak    → Identity provider on http://localhost:8080
+
+To verify all containers are running:
+
+    docker ps
+
+You should see openldap, postgres, and keycloak all listed as "Up".
+
+Wait about 30–60 seconds after this step for Keycloak to finish initialising
+before trying to open it in your browser.
+
+Keycloak Admin Console: http://localhost:8080
+  Username: admin
+  Password: Stark@123
+
+NOTE: Splunk is NOT managed by Docker here. If you use Splunk, start it
+separately and ensure it is accessible at https://localhost:8089.
+
+================================================================================
+  STEP 2 — START THE BACKEND (Node.js / Express API Server)
+================================================================================
+
+Open a NEW terminal window and run:
+
+    cd C:\Users\cjsuj\OneDrive\Desktop\stark-industries-iam-lab\backend
+    npm start
+
+The backend will start and print:
+
+    ====================================================
+     Stark Industries Security Backend Server Running
+     Port: http://0.0.0.0:5000 (http://127.0.0.1:5000)
+     AI Endpoint: http://127.0.0.1:5000/api/ai/chat
+     Gemini API Key Configured: YES (Active)
+    ====================================================
+
+Keep this terminal open. Do not close it.
+
+You can verify the backend is healthy by opening in your browser:
+    http://127.0.0.1:5000/api/health
+
+It should return: {"status":"ok", ...}
+
+================================================================================
+  STEP 3 — START THE SOC PORTAL (React Frontend)
+================================================================================
+
+Open a NEW terminal window and run:
+
+    cd C:\Users\cjsuj\OneDrive\Desktop\stark-industries-iam-lab\soc-portal
+    npm run dev
+
+The SOC Portal will start and print something like:
+
+    VITE v5.x  ready in xxx ms
+    ➜  Local:   http://localhost:3001/
+
+Keep this terminal open. Do not close it.
+
+Open your browser and go to:
+    http://localhost:3001
+
+================================================================================
+  STEP 4 — VERIFY JARVIS IS WORKING
+================================================================================
+
+1. Open http://localhost:3001 in your browser
+2. Click "JARVIS Copilot" in the left sidebar
+3. Type a message such as: "Hello JARVIS, what can you help me with?"
+4. JARVIS should reply within 3–5 seconds
+
+If JARVIS does not reply:
+  - Make sure the backend terminal (Step 2) is still running and shows no errors
+  - Check that your GEMINI_API_KEY in .env is correct
+  - Try clicking "Clear Chat" and sending the message again
+
+================================================================================
+  FULL STARTUP SUMMARY (Quick Reference)
+================================================================================
+
+Terminal 1 (run once, stays running):
+  cd C:\Users\cjsuj\OneDrive\Desktop\stark-industries-iam-lab
+  docker compose up -d
+
+Terminal 2 (keep open):
+  cd C:\Users\cjsuj\OneDrive\Desktop\stark-industries-iam-lab\backend
+  npm start
+
+Terminal 3 (keep open):
+  cd C:\Users\cjsuj\OneDrive\Desktop\stark-industries-iam-lab\soc-portal
+  npm run dev
+
+================================================================================
+  STOPPING THE SYSTEM
+================================================================================
+
+To stop the SOC Portal:    Press Ctrl+C in Terminal 3
+To stop the Backend:       Press Ctrl+C in Terminal 2
+To stop Docker services:   Run: docker compose down
+
+================================================================================
+  SERVICE URLS AT A GLANCE
+================================================================================
+
+  SOC Portal (React frontend):   http://localhost:3001
+  Backend API (Express):         http://127.0.0.1:5000
+  Backend Health Check:          http://127.0.0.1:5000/api/health
+  JARVIS AI Endpoint:            http://127.0.0.1:5000/api/ai/chat
+  Keycloak Admin Console:        http://localhost:8080
+  LDAP (OpenLDAP):               ldap://localhost:389
+
+================================================================================

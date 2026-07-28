@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <linearGradient id="starkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#1d4ed8" />
+    </linearGradient>
+    <linearGradient id="starkGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#60a5fa" />
+      <stop offset="100%" stop-color="#3b82f6" />
+    </linearGradient>
+  </defs>
+  <!-- Outer Pentagon Shield -->
+  <polygon points="50,5 90,25 90,70 50,95 10,70 10,25" fill="#0f172a" stroke="url(#starkGrad)" stroke-width="4" stroke-linejoin="round" />
+  <!-- Arc Reactor / S-Chevron -->
+  <path d="M30,32 L70,32 L40,50 L70,68 L30,68" stroke="url(#starkGlow)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Central Energy Node -->
+  <circle cx="50" cy="50" r="4" fill="#60a5fa" />
+</svg>
