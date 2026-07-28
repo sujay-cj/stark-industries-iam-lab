@@ -1,6 +1,6 @@
 <div align="center">
 
-# ⚡ Stark Industries IAM Lab
+# ⚡ Stark Industries IAM Platform
 
 **Enterprise-grade Identity & Access Management home lab — built from the ground up.**
 
@@ -24,7 +24,7 @@
 
 ## 🧠 What Is This?
 
-The **Stark Industries IAM Lab** is a full end-to-end **identity security platform** that replicates real-world enterprise infrastructure. It covers the entire identity lifecycle:
+The **Stark Industries IAM Platform** is a full end-to-end **identity security platform** that replicates real-world enterprise infrastructure. It covers the entire identity lifecycle:
 
 ```
 Directory Provisioning → Identity Federation → OIDC Authentication → SIEM Ingestion → AI Threat Analysis
@@ -207,7 +207,7 @@ sequenceDiagram
 ## 📁 Project Structure
 
 ```
-stark-industries-iam-lab/
+stark-industries-iam-platform/
 │
 ├── 📄 docker-compose.yml          # OpenLDAP + PostgreSQL + Keycloak
 ├── 📄 .env.example                # Root environment variable template
@@ -265,8 +265,8 @@ stark-industries-iam-lab/
 ### 1. Clone
 
 ```bash
-git clone https://github.com/sujay-cj/stark-industries-iam-lab.git
-cd stark-industries-iam-lab
+git clone https://github.com/sujay-cj/stark-industries-iam-platform.git
+cd stark-industries-iam-platform
 ```
 
 ### 2. Configure Environment

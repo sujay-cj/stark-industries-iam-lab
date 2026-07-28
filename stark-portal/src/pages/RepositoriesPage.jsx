@@ -4,7 +4,7 @@ import { Badge } from '../components/common/Badge';
 
 export function RepositoriesPage() {
   const repos = [
-    { name: 'stark-industries-iam-lab', visibility: 'Internal', lang: 'Docker / React / LDAP', stars: 128, updated: '2 hours ago' },
+    { name: 'stark-industries-iam-platform', visibility: 'Internal', lang: 'Docker / React / LDAP', stars: 128, updated: '2 hours ago' },
     { name: 'stark-sec/sec-ops-ui', visibility: 'Private', lang: 'JavaScript / Vite', stars: 45, updated: '1 day ago' },
     { name: 'stark-sec/container-guard', visibility: 'Private', lang: 'Go / K8s', stars: 89, updated: '3 days ago' },
     { name: 'stark-sec/threat-intel', visibility: 'Internal', lang: 'Python / FastAPI', stars: 67, updated: '5 days ago' }

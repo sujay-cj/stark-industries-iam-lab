@@ -4,7 +4,7 @@
  */
 
 const KNOWLEDGE_BASE = `
-STARK INDUSTRIES IAM LAB - KNOWLEDGE BASE
+STARK INDUSTRIES IAM PLATFORM - KNOWLEDGE BASE
 
 PROJECT ARCHITECTURE:
 - Frontend: React SOC Portal (localhost:3001) & Stark Employee Portal (localhost:3000)

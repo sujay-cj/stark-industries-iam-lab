@@ -26,7 +26,7 @@ export function Footer() {
         <span style={{ color: 'var(--border-medium)' }}>|</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
           <Shield size={12} style={{ color: 'var(--accent-blue)' }} />
-          <span>IAM Lab Architecture</span>
+          <span>IAM Platform Architecture</span>
         </div>
       </div>
 

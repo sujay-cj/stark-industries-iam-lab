@@ -9,7 +9,7 @@ export function AiCopilotPage() {
     {
       id: 1,
       sender: 'assistant',
-      text: 'Greetings. I am JARVIS (Just A Rather Very Intelligent Security Assistant), your dedicated Identity Security Copilot for Stark Industries IAM Lab. How may I assist your investigation or SIEM analysis today?'
+      text: 'Greetings. I am JARVIS (Just A Rather Very Intelligent Security Assistant), your dedicated Identity Security Copilot for Stark Industries IAM Platform. How may I assist your investigation or SIEM analysis today?'
     }
   ]);
   const [input, setInput] = useState('');

@@ -1,7 +1,7 @@
 {
   "name": "stark-iam-backend",
   "version": "1.0.0",
-  "description": "Express.js Backend for Stark Industries IAM Lab - Splunk REST API & Keycloak Integration",
+  "description": "Express.js Backend for Stark Industries IAM Platform - Splunk REST API & Keycloak Integration",
   "main": "server.js",
   "type": "module",
   "scripts": {

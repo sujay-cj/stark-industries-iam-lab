@@ -74,7 +74,7 @@ export function LandingHero({ onSsoLogin, onNavigateDashboard }) {
         }}>
           <img src={starkLogo} alt="Stark Industries" style={{ width: '22px', height: '22px' }} />
           <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--accent-blue-light)', letterSpacing: '0.05em' }}>
-            STARK INDUSTRIES IAM LAB • ENTERPRISE PORTAL
+            STARK INDUSTRIES IAM PLATFORM • ENTERPRISE PORTAL
           </span>
         </div>
 

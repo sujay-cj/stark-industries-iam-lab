@@ -1,8 +1,8 @@
 ================================================================================
-  STARK INDUSTRIES IAM LAB — SYSTEM STARTUP GUIDE
+  STARK INDUSTRIES IAM PLATFORM — SYSTEM STARTUP GUIDE
 ================================================================================
 
-This guide explains how to start every component of the Stark Industries IAM Lab
+This guide explains how to start every component of the STARK INDUSTRIES IAM PLATFORM
 from scratch. Run these steps in order each time you want to bring the full system up.
 
 Prerequisites:
@@ -17,8 +17,8 @@ Prerequisites:
 
 Make sure BOTH of these files exist and have the correct values:
 
-  File 1: stark-industries-iam-lab\.env  (root)
-  File 2: stark-industries-iam-lab\backend\.env
+  File 1: stark-industries-iam-platform\.env  (root)
+  File 2: stark-industries-iam-platform\backend\.env
 
 Both files must contain at minimum:
 
@@ -47,7 +47,7 @@ You only need to do this once. Do NOT commit .env files to Git.
 
 Open a terminal and run:
 
-    cd C:\Users\cjsuj\OneDrive\Desktop\stark-industries-iam-lab
+    cd C:\Users\cjsuj\OneDrive\Desktop\stark-industries-iam-platform
     docker compose up -d
 
 This starts 3 containers in the background:
@@ -77,7 +77,7 @@ separately and ensure it is accessible at https://localhost:8089.
 
 Open a NEW terminal window and run:
 
-    cd C:\Users\cjsuj\OneDrive\Desktop\stark-industries-iam-lab\backend
+    cd C:\Users\cjsuj\OneDrive\Desktop\stark-industries-iam-platform\backend
     npm start
 
 The backend will start and print:
@@ -102,7 +102,7 @@ It should return: {"status":"ok", ...}
 
 Open a NEW terminal window and run:
 
-    cd C:\Users\cjsuj\OneDrive\Desktop\stark-industries-iam-lab\soc-portal
+    cd C:\Users\cjsuj\OneDrive\Desktop\stark-industries-iam-platform\soc-portal
     npm run dev
 
 The SOC Portal will start and print something like:
@@ -134,15 +134,15 @@ If JARVIS does not reply:
 ================================================================================
 
 Terminal 1 (run once, stays running):
-  cd C:\Users\cjsuj\OneDrive\Desktop\stark-industries-iam-lab
+  cd C:\Users\cjsuj\OneDrive\Desktop\stark-industries-iam-platform
   docker compose up -d
 
 Terminal 2 (keep open):
-  cd C:\Users\cjsuj\OneDrive\Desktop\stark-industries-iam-lab\backend
+  cd C:\Users\cjsuj\OneDrive\Desktop\stark-industries-iam-platform\backend
   npm start
 
 Terminal 3 (keep open):
-  cd C:\Users\cjsuj\OneDrive\Desktop\stark-industries-iam-lab\soc-portal
+  cd C:\Users\cjsuj\OneDrive\Desktop\stark-industries-iam-platform\soc-portal
   npm run dev
 
 ================================================================================
