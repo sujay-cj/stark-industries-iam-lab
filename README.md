@@ -1,306 +1,320 @@
-# Stark Industries IAM Lab
+<div align="center">
 
-> An enterprise-grade **Identity & Access Management** home lab built around **Keycloak**, **OpenLDAP**, **Splunk**, and a custom AI Security Copilot — **JARVIS**.
+# ⚡ Stark Industries IAM Lab
 
-![Landing Page](./screenshot/landing%20page.png)
+**Enterprise-grade Identity & Access Management home lab — built from the ground up.**
+
+[![Node.js](https://img.shields.io/badge/Node.js-v22-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org)
+[![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
+[![Keycloak](https://img.shields.io/badge/Keycloak-26.3-4D9BE6?style=for-the-badge&logo=keycloak&logoColor=white)](https://www.keycloak.org)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com)
+[![Splunk](https://img.shields.io/badge/Splunk-SIEM-FF5733?style=for-the-badge&logo=splunk&logoColor=white)](https://splunk.com)
+[![Gemini](https://img.shields.io/badge/Google_Gemini-AI-8E75B2?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
+
+*Keycloak OIDC · OpenLDAP Federation · Splunk SIEM · JARVIS AI Security Copilot*
+
+</div>
 
 ---
 
-## What Is This?
-
-The **Stark Industries IAM Lab** is a full end-to-end identity and security operations platform designed to replicate real-world enterprise IAM infrastructure. It covers the entire lifecycle: directory provisioning → identity federation → OIDC authentication → SIEM ingestion → AI-powered threat analysis.
-
-Built as a personal project to demonstrate hands-on depth in IAM engineering, SOC operations, and AI integration.
+![SOC Dashboard](./screenshot/soc-with-iam-data.png)
 
 ---
 
-## Architecture
+## 🧠 What Is This?
+
+The **Stark Industries IAM Lab** is a full end-to-end **identity security platform** that replicates real-world enterprise infrastructure. It covers the entire identity lifecycle:
+
+```
+Directory Provisioning → Identity Federation → OIDC Authentication → SIEM Ingestion → AI Threat Analysis
+```
+
+Built to demonstrate hands-on engineering depth across **IAM**, **SOC operations**, and **AI integration** — not a tutorial follow-along, but an original architecture designed, built, and debugged from scratch.
+
+---
+
+## 🏗️ Architecture
 
 ### Full System Architecture
 
 ```mermaid
 graph TD
-    subgraph Identity_Platform["🔐 IAM Platform"]
+    subgraph Identity_Platform["🔐 IAM Platform Layer"]
         KC["Keycloak 26.3\n(OIDC / SSO)"]
         LDAP["OpenLDAP\n(User Directory)"]
-        PG["PostgreSQL\n(Keycloak DB)"]
-        KC -- "User Federation\n(LDAP Sync)" --> LDAP
-        PG -- "Backing Store" --> KC
+        PG["PostgreSQL 17\n(Keycloak Backing Store)"]
+        KC -- "User Federation\n+ LDAP Sync" --> LDAP
+        PG -- "Persistent Storage" --> KC
     end
 
-    subgraph Applications["💻 Applications"]
-        EP["Stark Employee Portal\n(stark-portal — :3000)"]
-        SOC["SOC Sentinel Portal\n(soc-portal — :3001)"]
+    subgraph Applications["💻 Application Layer"]
+        EP["Stark Employee Portal\nstark-portal  :3000"]
+        SOC["SOC Sentinel Portal\nsoc-portal  :3001"]
     end
 
-    subgraph Backend["⚙️ Express Security Backend (:5000)"]
+    subgraph Backend["⚙️ Express Security Backend  :5000"]
         API["REST API Gateway"]
-        AUTH["JWT Auth Middleware"]
-        ORCH["AI Orchestrator\n(orchestratorService.js)"]
-        CTX["Context Service\n(contextService.js)"]
-        MEM["Memory Service\n(memoryService.js)"]
-        GEM["Gemini Service\n(geminiService.js)"]
-        FWD["Keycloak Log Forwarder\n(keycloakLogForwarder.js)"]
+        AUTH["JWT Auth Middleware\nrequireAuth()"]
+        ORCH["AI Orchestrator\norchestrator Service.js"]
+        CTX["Context Service\nIAM Knowledge Base"]
+        MEM["Memory Service\nPer-user History"]
+        GEM["Gemini Service\nDirect REST v1beta"]
+        FWD["Keycloak Log Forwarder\nNon-blocking Batch Mode"]
     end
 
     subgraph SIEM["📊 SIEM Layer"]
-        SPLUNK["Splunk Enterprise\n(REST API :8089)"]
+        SPLUNK["Splunk Enterprise\nREST API  :8089"]
         IDX["index=keycloak"]
     end
 
-    GEMINI["☁️ Google Gemini API\n(gemini-flash-latest)"]
+    GEMINI["☁️ Google Gemini API\ngemini-flash-latest"]
 
     KC -- "OIDC Login Flow" --> EP
     KC -- "OIDC Login Flow" --> SOC
     SOC -- "POST /api/ai/chat\nGET /api/splunk/*\nGET /api/dashboard/*" --> API
-    API --> AUTH
-    AUTH --> ORCH
+    API --> AUTH --> ORCH
     ORCH --> CTX
     ORCH --> MEM
     ORCH --> GEM
     GEM -- "HTTPS REST" --> GEMINI
     FWD -- "docker logs keycloak" --> KC
-    FWD -- "Batch Ingest" --> SPLUNK
+    FWD -- "Batch POST" --> SPLUNK
     API -- "SPL Search Jobs" --> SPLUNK
     SPLUNK --> IDX
 ```
 
-### JARVIS AI Copilot Architecture
+### JARVIS AI Copilot Pipeline
 
 ```mermaid
-graph LR
-    UI["React SOC Portal\nAiCopilotPage.jsx"]
-    UI -- "POST /api/ai/chat\n{message, JWT}" --> CTRL["AI Controller\naiController.js"]
-    CTRL -- "Validate JWT" --> AUTH["Auth Middleware\nrequireAuth()"]
-    AUTH --> ORCH["AI Orchestrator\norchestrator Service.js"]
-    ORCH -- "Load" --> CTX["Context Service\nStark IAM Knowledge Base"]
-    ORCH -- "Load / Save" --> MEM["Memory Service\nPer-user History (last 10)"]
-    ORCH -- "Assembled Payload" --> GEM["Gemini Service\nDirect REST to v1beta"]
-    GEM -- "HTTPS POST" --> GAPI["Google Gemini API\ngemini-flash-latest"]
-    GAPI -- "200 OK + Text" --> GEM
-    GEM --> ORCH
-    ORCH --> CTRL
-    CTRL -- "JSON Response" --> UI
+sequenceDiagram
+    participant U as 👤 SOC Analyst
+    participant R as React Portal
+    participant E as Express Backend
+    participant O as AI Orchestrator
+    participant C as Context Service
+    participant M as Memory Service
+    participant G as Gemini API
+
+    U->>R: Types security question
+    R->>E: POST /api/ai/chat + JWT Bearer
+    E->>E: requireAuth() — validates JWT
+    E->>O: processChatMessage(userId, message)
+    O->>C: getPersistentContext() — IAM knowledge base
+    O->>M: getHistory(userId) — last 10 exchanges
+    O->>G: HTTPS POST to v1beta/models/gemini-flash-latest
+    G-->>O: 200 OK — AI response text
+    O->>M: addExchange() — save to memory
+    O-->>E: responseText
+    E-->>R: { success: true, response: "..." }
+    R-->>U: JARVIS reply rendered in chat UI
 ```
 
 ---
 
-## Screenshots
+## 📸 Screenshots
 
-### SOC Dashboard — Real Keycloak Telemetry
-![SOC Dashboard with IAM Data](./screenshot/soc-with-iam-data.png)
+<table>
+  <tr>
+    <td align="center"><b>JARVIS Security Copilot</b></td>
+    <td align="center"><b>SOC Security Alerts</b></td>
+  </tr>
+  <tr>
+    <td><img src="./screenshot/jarvis.png" alt="JARVIS Copilot"/></td>
+    <td><img src="./screenshot/soc-alert-real-data.png" alt="Security Alerts"/></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Keycloak Login (Custom Theme)</b></td>
+    <td align="center"><b>Keycloak Groups — RBAC</b></td>
+  </tr>
+  <tr>
+    <td><img src="./screenshot/login-page.png" alt="Keycloak Login"/></td>
+    <td><img src="./screenshot/key-cloak-group.png" alt="Keycloak Groups"/></td>
+  </tr>
+  <tr>
+    <td align="center"><b>OpenLDAP Directory — Apache Directory Studio</b></td>
+    <td align="center"><b>Stark Employee Portal</b></td>
+  </tr>
+  <tr>
+    <td><img src="./screenshot/06-ldap-search-engineering.png" alt="OpenLDAP"/></td>
+    <td><img src="./screenshot/landing%20page.png" alt="Landing Page"/></td>
+  </tr>
+</table>
 
-### JARVIS Security Copilot
-![JARVIS AI Copilot](./screenshot/jarvis.png)
+### Architecture Diagrams
 
-### Security Alerts — Live Keycloak Events Indexed in Splunk
-![SOC Security Alerts](./screenshot/soc-alert-real-data.png)
-
-### Keycloak Login Page (Custom Stark Theme)
-![Keycloak Login](./screenshot/login-page.png)
-
-### Keycloak Realm — Groups Configuration
-![Keycloak Groups](./screenshot/key-cloak-group.png)
-
-### OpenLDAP — Directory Structure with Apache Directory Studio
-![LDAP Directory](./screenshot/06-ldap-search-engineering.png)
-
-### System Architecture Diagram
-![Architecture Diagram](./screenshot/architucutre%20without%20splunk.png)
-
-### AI Pipeline Architecture
-![AI Architecture](./screenshot/ai-architecture-daiagram.png)
-
----
-
-## Technology Stack
-
-| Layer | Technology |
+| Full System (with SIEM) | JARVIS AI Pipeline |
 |---|---|
-| **Identity Provider** | Keycloak 26.3 (OIDC, User Federation) |
-| **User Directory** | OpenLDAP (osixia/openldap) |
-| **Database** | PostgreSQL 17 |
-| **SIEM** | Splunk Enterprise (REST API) |
-| **Backend** | Node.js + Express.js (ESM) |
-| **Auth Middleware** | JWT Bearer token validation (jsonwebtoken) |
-| **AI Copilot** | Google Gemini (`gemini-flash-latest`) via direct REST |
-| **Frontend** | React 18 + Vite + TailwindCSS |
-| **Containerisation** | Docker + Docker Compose |
-| **API Security** | Helmet, CORS, Morgan |
+| ![Architecture](./screenshot/architucutre%20without%20splunk.png) | ![AI Architecture](./screenshot/ai-architecture-daiagram.png) |
 
 ---
 
-## Features
+## 🛠️ Technology Stack
+
+| Layer | Technology | Purpose |
+|---|---|---|
+| **Identity Provider** | Keycloak 26.3 | OIDC SSO, user federation, group RBAC |
+| **User Directory** | OpenLDAP (osixia/openldap) | Enterprise directory: People, Groups, Applications, Devices |
+| **Database** | PostgreSQL 17 | Keycloak persistence |
+| **SIEM** | Splunk Enterprise | Log indexing, SPL search, threat detection |
+| **Backend** | Node.js + Express.js (ESM) | REST API gateway, AI routing, Splunk proxy |
+| **Auth** | jsonwebtoken | JWT Bearer token validation |
+| **AI Copilot** | Google Gemini `gemini-flash-latest` | Security intelligence, SPL generation |
+| **Frontend** | React 18 + Vite + TailwindCSS | SOC portal, employee portal |
+| **Containers** | Docker + Docker Compose | Keycloak, OpenLDAP, PostgreSQL |
+| **Security** | Helmet, CORS, Morgan | HTTP hardening, request logging |
+
+---
+
+## ✨ Features
 
 ### 🔐 Identity & Access Management
-- **OpenLDAP** directory with enterprise OUs: `People`, `Groups`, `Applications`, `Devices`, `Service Accounts`, `Executives`
-- **Keycloak 26.3** configured with:
+- **OpenLDAP** enterprise directory with OUs: `People` → `Executives / Engineering / IT / Security`, `Groups`, `Applications`, `Devices`, `Service Accounts`
+- **Keycloak 26.3** with:
   - Custom `stark-industries` realm
-  - LDAP user federation with sync
-  - OIDC clients for both portals (`soc-portal`, `employee-portal`)
+  - LDAP user federation with two-way sync
+  - OIDC clients for both portals
   - Group-based access control (`soc-portal-users`, `employee-portal-users`)
+  - Custom login theme branded for Stark Industries
 
-### 🖥️ Stark Employee Portal (`stark-portal`)
-- React-based internal employee portal
-- Keycloak OIDC SSO integration target
-- Branded with Stark Industries identity
+### 🛡️ SOC Sentinel Portal
+- **Dashboard** — Live Keycloak telemetry: total log count, auth errors, session events, LDAP sync events, 24-hour stacked bar chart
+- **Alerts** — Real security events (`LOGIN_ERROR`, `CODE_TO_TOKEN_ERROR`, `IAM_EVENT`, `LDAP_SYNC`) ingested from Keycloak container logs into Splunk `index=keycloak` and displayed with severity classification
+- **Search (SPL)** — JARVIS-powered natural language → Splunk SPL conversion
+- **JARVIS Copilot** — Full AI chat with persistent knowledge and memory
 
-### 🛡️ SOC Sentinel Portal (`soc-portal`)
-- **Dashboard** — Live Keycloak IAM telemetry: total logs, auth errors, session events, LDAP sync events, 24-hour trend chart
-- **Alerts** — Real-time security events indexed from Keycloak into Splunk (`index=keycloak`), with severity classification
-- **Search (SPL)** — Natural language → SPL query builder powered by JARVIS
-- **JARVIS Copilot** — AI security assistant with persistent context and conversation memory
+### 🤖 JARVIS — AI Security Copilot
 
-### 🤖 JARVIS AI Security Copilot
-- **Identity** — Just A Rather Very Intelligent Security Assistant
-- **Capabilities**:
-  - IAM concept explanation (OIDC flows, JWT claims, LDAP, Keycloak events)
-  - Natural language → Splunk SPL query generation
-  - Security event analysis and threat summarisation
-  - User profile lookup from the Stark IAM knowledge base
-- **Architecture** — 4-layer pipeline: Controller → Orchestrator → Context/Memory → Gemini REST API
-- **Memory** — Per-user conversation history (last 10 exchanges) stored in-process
-- **Reliability** — Direct HTTPS REST calls to Gemini v1beta (bypasses SDK retry-on-429 hangs)
+> **J**ust **A** **R**ather **V**ery **I**ntelligent **S**ecurity **A**ssistant
 
-### 📊 SIEM Integration
-- `keycloakLogForwarder.js` — non-blocking batch log collector that streams Keycloak Docker container stdout/stderr into Splunk `index=keycloak` every 10 seconds
-- Splunk REST API integration for SPL search job execution from the SOC portal
+| Capability | Description |
+|---|---|
+| **IAM Explanation** | Explains Keycloak events, OIDC flows, JWT claims, LDAP operations |
+| **SPL Generation** | Converts natural language to Splunk search queries |
+| **Threat Analysis** | Summarises indexed security events and identifies patterns |
+| **User Lookup** | Profiles users from the Stark IAM knowledge base |
+| **Conversation Memory** | Retains last 10 exchanges per user for contextual answers |
+
+**Architecture:** 4-layer pipeline — Controller → Orchestrator → Context+Memory → Gemini REST API. Uses direct HTTPS to `v1beta` endpoint (bypasses SDK retry-on-429 hangs).
+
+### 📊 SIEM Pipeline
+- `keycloakLogForwarder.js` collects Keycloak Docker container logs every 10 seconds
+- Batch-posts to Splunk `index=keycloak` via REST API (`/services/receivers/simple`)
+- Non-blocking async design — doesn't stall the Node.js event loop
 
 ---
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 stark-industries-iam-lab/
-├── docker-compose.yml          # OpenLDAP + PostgreSQL + Keycloak containers
-├── .env.example                # Root environment variable template
-├── HOW_TO_START.txt            # Full startup guide
 │
-├── backend/                    # Express.js Security Backend
-│   ├── server.js               # Entry point, binds 0.0.0.0:5000
-│   ├── .env.example            # Backend environment template
+├── 📄 docker-compose.yml          # OpenLDAP + PostgreSQL + Keycloak
+├── 📄 .env.example                # Root environment variable template
+├── 📄 HOW_TO_START.txt            # Full startup guide
+├── 📄 README.md
+│
+├── 📂 backend/                    # Express.js Security Backend
+│   ├── server.js                  # Entry point — binds 0.0.0.0:5000
+│   ├── .env.example
 │   ├── config/
-│   │   └── prompts.js          # JARVIS system prompt & capability definitions
+│   │   └── prompts.js             # JARVIS system prompt + capability definitions
 │   ├── controllers/
-│   │   └── aiController.js     # POST /api/ai/chat handler
+│   │   └── aiController.js        # POST /api/ai/chat
 │   ├── middleware/
-│   │   └── auth.js             # JWT Bearer token validation
+│   │   └── auth.js                # JWT Bearer validation
 │   ├── routes/
-│   │   ├── aiRoutes.js         # /api/ai/*
-│   │   ├── splunkRoutes.js     # /api/splunk/*
-│   │   └── dashboardRoutes.js  # /api/dashboard/*
+│   │   ├── aiRoutes.js            # /api/ai/*
+│   │   ├── splunkRoutes.js        # /api/splunk/*
+│   │   └── dashboardRoutes.js     # /api/dashboard/*
 │   └── services/
-│       ├── geminiService.js    # Direct Gemini REST API wrapper
-│       ├── orchestratorService.js  # AI capability router
-│       ├── contextService.js   # IAM knowledge base context
-│       ├── memoryService.js    # Per-user conversation memory
-│       └── keycloakLogForwarder.js  # Keycloak → Splunk batch ingestion
+│       ├── geminiService.js       # Direct Gemini REST API (no SDK)
+│       ├── orchestratorService.js # AI capability router + intent detection
+│       ├── contextService.js      # IAM knowledge base context loader
+│       ├── memoryService.js       # Per-user conversation history (Map)
+│       └── keycloakLogForwarder.js # Keycloak → Splunk batch ingestion
 │
-├── soc-portal/                 # React SOC Sentinel Portal (Vite, port 3001)
+├── 📂 soc-portal/                 # React SOC Sentinel Portal (Vite, :3001)
 │   └── src/
 │       ├── pages/
-│       │   ├── AiCopilotPage.jsx   # JARVIS chat interface
-│       │   ├── DashboardPage.jsx   # IAM telemetry dashboard
-│       │   ├── AlertsPage.jsx      # Security alerts table
-│       │   └── SearchPage.jsx      # SPL search interface
-│       ├── services/
-│       │   └── splunkService.js    # Splunk REST client
-│       └── components/
-│           └── common/
-│               └── Sidebar.jsx     # Navigation
+│       │   ├── AiCopilotPage.jsx  # JARVIS chat UI
+│       │   ├── DashboardPage.jsx  # Live IAM telemetry dashboard
+│       │   ├── AlertsPage.jsx     # Splunk-indexed alert table
+│       │   └── SearchPage.jsx     # SPL search interface
+│       └── services/
+│           └── splunkService.js   # Splunk REST client
 │
-├── stark-portal/               # React Employee Portal (port 3000)
+├── 📂 stark-portal/               # React Employee Portal (Vite, :3000)
 │
-└── screenshot/                 # Project screenshots and architecture diagrams
+└── 📂 screenshot/                 # 24 screenshots + architecture diagrams
 ```
 
 ---
 
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
 
-| Requirement | Version |
-|---|---|
-| Docker Desktop | Latest |
-| Node.js | v18+ |
-| npm | v9+ |
-| Google Gemini API Key | [Get one free](https://aistudio.google.com) |
-| Splunk Enterprise | Optional (for full SIEM features) |
+| Tool | Version | Notes |
+|---|---|---|
+| Docker Desktop | Latest | Must be running |
+| Node.js | v18+ | For backend + frontend |
+| Gemini API Key | — | [Get free key](https://aistudio.google.com) |
+| Splunk Enterprise | 9.x | Optional — for full SIEM features |
 
-### 1. Clone the Repository
+### 1. Clone
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/stark-industries-iam-lab.git
+git clone https://github.com/sujay-cj/stark-industries-iam-lab.git
 cd stark-industries-iam-lab
 ```
 
-### 2. Configure Environment Variables
+### 2. Configure Environment
 
 ```bash
-# Root .env (for Docker Compose)
 cp .env.example .env
-
-# Backend .env
 cp backend/.env.example backend/.env
 ```
 
-Open both `.env` files and fill in your credentials. The only key you **must** set to get JARVIS working is:
+Edit both `.env` files. The only required key to get JARVIS working:
 
 ```env
 GEMINI_API_KEY=your_key_from_aistudio.google.com
 ```
 
-### 3. Start Docker Services (Keycloak + OpenLDAP + PostgreSQL)
+### 3. Start Docker Services
 
 ```bash
 docker compose up -d
+# Wait ~60s for Keycloak to boot
+docker ps  # Verify: openldap, postgres, keycloak all "Up"
 ```
 
-Wait ~60 seconds for Keycloak to initialise. Verify with:
+Keycloak Admin: [http://localhost:8080](http://localhost:8080) → `admin` / your `KEYCLOAK_ADMIN_PASSWORD`
 
-```bash
-docker ps
-# Expected: openldap, postgres, keycloak all "Up"
-```
-
-### 4. Start the Backend
+### 4. Start Backend
 
 ```bash
 cd backend
 npm install
 npm start
+# Verify: http://127.0.0.1:5000/api/health → {"status":"ok"}
 ```
 
-Verify: [http://127.0.0.1:5000/api/health](http://127.0.0.1:5000/api/health) → `{"status":"ok"}`
-
-### 5. Start the SOC Portal
+### 5. Start SOC Portal
 
 ```bash
 cd soc-portal
 npm install
 npm run dev
+# Open: http://localhost:3001
 ```
 
-Open: [http://localhost:3001](http://localhost:3001)
-
-### 6. (Optional) Configure Keycloak
-
-After starting Docker:
-
-1. Open [http://localhost:8080](http://localhost:8080)
-2. Log in with `admin` / your `KEYCLOAK_ADMIN_PASSWORD`
-3. Create the `stark-industries` realm
-4. Create groups: `soc-portal-users`, `employee-portal-users`
-5. Configure LDAP federation pointing to `openldap:389`
-
-See [HOW_TO_START.txt](./HOW_TO_START.txt) for the complete step-by-step guide.
+> 📖 For the complete step-by-step guide including Keycloak realm setup, see **[HOW_TO_START.txt](./HOW_TO_START.txt)**
 
 ---
 
-## API Reference
-
-### Backend Endpoints
+## 📡 API Reference
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
@@ -310,61 +324,69 @@ See [HOW_TO_START.txt](./HOW_TO_START.txt) for the complete step-by-step guide.
 | `GET` | `/api/splunk/search` | JWT Bearer | Execute SPL search |
 | `GET` | `/api/splunk/alerts` | JWT Bearer | Fetch indexed alerts |
 
-### JARVIS Chat Example
+**Example — Ask JARVIS:**
 
 ```bash
 curl -X POST http://127.0.0.1:5000/api/ai/chat \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer <your_jwt_token>" \
-  -d '{"message": "Show me failed login attempts for user tony in the last 24 hours"}'
+  -H "Authorization: Bearer <jwt_token>" \
+  -d '{"message": "Show me all failed login attempts for user tony in the last 24 hours"}'
 ```
 
-Response:
 ```json
 {
   "success": true,
-  "response": "Here is the SPL query to retrieve failed login attempts for user 'tony':\n\nindex=keycloak type=LOGIN_ERROR user=tony earliest=-24h..."
+  "response": "Here is the SPL query:\n\nindex=keycloak type=LOGIN_ERROR user=tony earliest=-24h | table _time, user, type, client, realm"
 }
 ```
 
 ---
 
-## Security Notes
+## 🔒 Security Design
 
-- `.env` files are excluded from git via `.gitignore` — **never commit them**
-- The backend uses `helmet` for HTTP security headers
-- All AI and data endpoints require a valid JWT Bearer token
-- JWT tokens are decoded (not verified against Keycloak public key in dev mode — production should use JWKS verification)
-- Splunk REST API connections use a self-signed TLS agent (`rejectUnauthorized: false`) — replace with proper certs in production
-
----
-
-## What I Learned Building This
-
-- **IAM Architecture** — Designing multi-tier identity systems with LDAP federation and OIDC flows from scratch
-- **Keycloak Administration** — Realm configuration, client scopes, user federation, group-based access policies
-- **SIEM Engineering** — Keycloak log ingestion pipelines, SPL query design, event classification
-- **AI Integration** — Building a production-grade AI service layer with conversation memory, prompt engineering, and reliable API integration
-- **Debugging Windows IPv6 stalls** — Chrome's `localhost` → `[::1]` resolution causing 60-second timeouts; fixed by binding Express to `0.0.0.0` and targeting `127.0.0.1` directly in the frontend
-- **Node.js event loop management** — Refactoring blocking sequential `await` loops in log forwarders to non-blocking batch operations
+- **`.env` files are gitignored** — credentials never leave your machine
+- **Helmet** sets security headers on every response
+- **All AI + data endpoints** require a valid JWT Bearer token — unauthenticated requests get `401`
+- **CORS** restricted to known portal origins (`localhost:3000`, `localhost:3001`)
+- **Splunk TLS** uses a self-signed cert agent in dev — replace with proper CA in production
+- **JWT** decoded but not signature-verified in dev mode — production should use Keycloak JWKS endpoint
 
 ---
 
-## Roadmap
+## 🧱 Engineering Challenges Solved
 
-- [ ] Keycloak JWKS-based JWT signature verification in production mode
-- [ ] JARVIS streaming responses (Server-Sent Events)
-- [ ] Splunk dashboard embedded in SOC portal via iFrame
+| Problem | Root Cause | Solution |
+|---|---|---|
+| JARVIS timing out in browser (60s) | `requireAuth` factory passed without `()` — `next()` never called | Added `()` to `router.use(requireAuth())` |
+| `@google/genai` SDK hanging on 429 | SDK silently retries rate-limit errors indefinitely | Rewrote `geminiService.js` as direct HTTPS REST calls |
+| Chrome timing out on `localhost:5000` | Windows 11 resolves `localhost` to IPv6 `[::1]` first | Bound Express to `0.0.0.0`, frontend targets `127.0.0.1` |
+| Log forwarder blocking event loop | 50 sequential `await axios.post()` calls per 5s interval | Replaced with single batch POST payload per interval |
+
+---
+
+## 🗺️ Roadmap
+
+- [ ] Keycloak JWKS-based JWT signature verification
+- [ ] JARVIS streaming responses via Server-Sent Events
+- [ ] JARVIS alert auto-triage — auto-generates investigation reports
 - [ ] Multi-tenant realm support
-- [ ] JARVIS alert auto-triage and investigation reports
-- [ ] Docker-compose profile for Splunk container
+- [ ] Docker Compose profile for Splunk container
+- [ ] OpenLDAP schema extensions for Stark department attributes
 
 ---
 
-## License
+## 📜 License
 
-MIT — free to use, learn from, and build upon.
+MIT — free to use, fork, and build upon.
 
 ---
 
-*Built by Sujay CJ — IAM & Security Engineering Portfolio Project*
+<div align="center">
+
+**Built by [Sujay CJ](https://github.com/sujay-cj)**
+
+*IAM & Security Engineering Portfolio Project*
+
+⭐ Star this repo if you found it useful!
+
+</div>
