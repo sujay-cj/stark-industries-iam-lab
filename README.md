@@ -354,7 +354,7 @@ curl -X POST http://127.0.0.1:5000/api/ai/chat \
 | JARVIS timing out in browser (60s) | `requireAuth` factory passed without `()` — `next()` never called | Added `()` to `router.use(requireAuth())` |
 | `@google/genai` SDK hanging on 429 | SDK silently retries rate-limit errors indefinitely | Rewrote `geminiService.js` as direct HTTPS REST calls |
 | Chrome timing out on `localhost:5000` | Windows 11 resolves `localhost` to IPv6 `[::1]` first | Bound Express to `0.0.0.0`, frontend targets `127.0.0.1` |
-| Log forwarder blocking event loop | 50 sequential `await axios.post()` calls per 5s interval | Replaced with single batch POST payload per interval |
+| Keycloak LDAP sync dropping users | Keycloak federation mapper required explicit `uid` attribute as the LDAP RDN — missing `departmentNumber` attribute caused partial syncs | Corrected the LDAP user federation mapper config and added missing `inetOrgPerson` attributes via Apache Directory Studio |
 
 ---
 
