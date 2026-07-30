@@ -347,6 +347,27 @@ curl -X POST http://127.0.0.1:5000/api/ai/chat \
 
 ---
 
+## 🎯 Skills Demonstrated
+
+### Identity & Access Management
+- Designed a multi-tier enterprise IAM architecture from scratch — directory layer, identity provider, and application layer
+- Configured Keycloak 26.3: realm creation, OIDC client registration, user federation, group-based access policies, and session management
+- Built and managed an OpenLDAP directory hierarchy with enterprise OUs (`People`, `Groups`, `Applications`, `Devices`, `Service Accounts`) using Apache Directory Studio
+- Implemented LDAP → Keycloak federation sync with attribute mapping (`uid`, `cn`, `mail`, `departmentNumber`)
+- Applied core IAM protocols hands-on: **OIDC**, **OAuth2**, **JWT claims**, **LDAP DN structure**, **group-based RBAC**
+
+### Security Operations
+- Designed a real-time SIEM ingestion pipeline: Keycloak container logs → custom log forwarder → Splunk `index=keycloak`
+- Classified and triaged live Keycloak security events: `LOGIN_ERROR`, `CODE_TO_TOKEN_ERROR`, `IAM_EVENT`, `LDAP_SYNC`
+- Wrote and understood Splunk SPL queries for authentication anomaly detection
+- Designed the JARVIS AI knowledge base to contextualise IAM telemetry for SOC analysts
+
+### Architecture & Integration
+- Designed the full system topology: containerised IAM platform, backend API gateway, two React portals, and a SIEM layer — all integrated
+- Made key architectural decisions: JWT-authenticated API boundary, per-user AI memory, direct Gemini REST over SDK for reliability
+- Used AI-assisted development for the application code layer while owning the infrastructure design, IAM configuration, and security architecture end-to-end
+
+---
 
 ## 🗺️ Roadmap
 
